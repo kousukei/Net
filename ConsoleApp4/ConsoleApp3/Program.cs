@@ -29,30 +29,43 @@ namespace ConsoleApp3
             Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             // 通信の受け入れ準備
             listener.Bind(localEndPoint);
-            listener.Listen(10);
+            listener.Listen(1000);
+            // 通信の確立
+            //handler = listener.Accept();
             do
             {
                 socket(listener);
-                message = Console.ReadLine();
-                text(message);
+                //message = Console.ReadLine();
+                //text(message);
             }
             while (message != "end");
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
+            end();
 
 
         }
-        static void socket(Socket he)
+        static void socket(Socket listener)
         {
-            // 通信の確立
-            handler = he.Accept();
-
-
+            handler = listener.Accept();
             // 任意の処理
             // データの受取をReceiveで行う。
             int bytesRec = handler.Receive(bytes);
             string data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
             Console.WriteLine(data);
+            text(data);
+        }
+        static void text(String ko)
+        {
+            // クライアントにSendで返す。
+            byte[] message = Encoding.UTF8.GetBytes(ko);
+            // Sendで送信
+            handler.Send(message);
+
+        }
+        static void end()
+        {
+            // ソケットの終了
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
         }
         static async Task Test()
         {
@@ -75,19 +88,6 @@ namespace ConsoleApp3
             string data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
             Console.WriteLine(data);
 
-        }
-        static void text(String ko)
-        {
-            // クライアントにSendで返す。
-            byte[] message = Encoding.UTF8.GetBytes(ko);
-            handler.Send(message);
-
-        }
-        static void end()
-        {
-            // ソケットの終了
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
         }
         /// <summary>
         /// サーバーを構築してメッセージを受信する
