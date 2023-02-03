@@ -19,17 +19,57 @@ namespace ConsoleApp2
         {
             //Task task = Http();
             //task.Wait();
-            // IPアドレスやポートの設定
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
-            do
+            //// IPアドレスやポートの設定
+            //IPHostEntry ipHostInfo = Dns.GetHostEntry("172.16.1.254");
+            //IPAddress ipAddress = ipHostInfo.AddressList[0];
+            //IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
+            //do
+            //{
+            //    message = Console.ReadLine();
+            //    SetClient(message, ipAddress, remoteEP);
+            //} while (message != "end");
+            //socket.Shutdown(SocketShutdown.Both);
+            //socket.Close();
+            //00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+            //データを送信するリモートホストとポート番号
+            string remoteHost = "172.16.1.254";
+            int remotePort = 11000;
+
+            //UdpClientオブジェクトを作成する
+            UdpClient udp =
+                new UdpClient();
+
+            for (; ; )
             {
-                message = Console.ReadLine();
-                SetClient(message, ipAddress, remoteEP);
-            } while (message != "end");
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
+                //送信するデータを作成する
+                Console.WriteLine("送信する文字列を入力してください。");
+                string sendMsg = Console.ReadLine();
+                byte[] sendBytes = Encoding.UTF8.GetBytes(sendMsg);
+
+                //リモートホストを指定してデータを送信する
+                udp.Send(sendBytes, sendBytes.Length, remoteHost, remotePort);
+
+                //または、
+                //udp = new UdpClient(remoteHost, remotePort);
+                //として、
+                //udp.Send(sendBytes, sendBytes.Length);
+
+                //"exit"と入力されたら終了
+                if (sendMsg.Equals("exit"))
+                {
+                    break;
+                }
+            }
+
+            //UdpClientを閉じる
+            udp.Close();
+
+            Console.WriteLine("終了しました。");
+            Console.ReadLine();
+
+
+
 
         }
         //static void Text(string sendMessage)
@@ -110,22 +150,23 @@ namespace ConsoleApp2
                     }
                 }
             }
-            string url = "http://localhost/info.php";
+            Console.WriteLine(ipAddress);
+            //string url = "http://localhost/info.php";
 
-            WebClient wc = new WebClient();
-            //NameValueCollectionの作成
-            NameValueCollection ps =
-                new NameValueCollection();
-            //送信するデータ（フィールド名と値の組み合わせ）を追加
-            //ps.Add("word", "インターネット");
-            ps.Add("ip2", ipAddress);
-            //データを送信し、また受信する
-            byte[] resData = wc.UploadValues(url, ps);
-            wc.Dispose();
+            //WebClient wc = new WebClient();
+            ////NameValueCollectionの作成
+            //NameValueCollection ps =
+            //    new NameValueCollection();
+            ////送信するデータ（フィールド名と値の組み合わせ）を追加
+            ////ps.Add("word", "インターネット");
+            //ps.Add("ip2", ipAddress);
+            ////データを送信し、また受信する
+            //byte[] resData = wc.UploadValues(url, ps);
+            //wc.Dispose();
 
-            //受信したデータを表示する
-            resText = Encoding.UTF8.GetString(resData);
-            Console.WriteLine(resText);
+            ////受信したデータを表示する
+            //resText = Encoding.UTF8.GetString(resData);
+            //Console.WriteLine(resText);
         }
     }
 }
